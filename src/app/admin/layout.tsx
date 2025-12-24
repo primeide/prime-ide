@@ -7,8 +7,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <div className={styles.adminLayout}>
             <aside className={styles.sidebar}>
                 <div className={styles.logo}>
-                    <h2>Prime<span>IDE</span></h2>
-                    <p>Admin Panel</p>
+                    <div style={{ position: 'relative', width: '150px', height: '40px', marginBottom: '10px' }}>
+                        <img
+                            src="/logo.png"
+                            alt="Prime IDE"
+                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                        />
+                    </div>
                 </div>
 
                 <nav className={styles.nav}>

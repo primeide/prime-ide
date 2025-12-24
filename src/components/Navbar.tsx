@@ -12,8 +12,13 @@ export default function Navbar() {
             <div className="container">
                 <div className={styles.navContent}>
                     <Link href="/" className={styles.logo}>
-                        <span className={styles.logoText}>Prime</span>
-                        <span className={styles.logoAccent}>IDE</span>
+                        <div style={{ position: 'relative', width: '150px', height: '40px' }}>
+                            <img
+                                src="/logo.png"
+                                alt="Prime IDE"
+                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                            />
+                        </div>
                     </Link>
 
                     <button

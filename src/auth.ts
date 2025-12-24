@@ -12,13 +12,14 @@ export const authConfig: NextAuthConfig = {
                 password: { label: "Password", type: "password" }
             },
             async authorize(credentials) {
-                // TODO: Replace with actual database check
-                // For now, accept demo credentials
-                if (credentials?.email === "admin@primeide.com" && credentials?.password === "admin123") {
+                const adminEmail = process.env.ADMIN_EMAIL || "admin@primeide.com";
+                const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
+
+                if (credentials?.email === adminEmail && credentials?.password === adminPassword) {
                     return {
                         id: "1",
                         name: "Admin User",
-                        email: "admin@primeide.com",
+                        email: adminEmail,
                         role: "ADMIN"
                     }
                 }
@@ -27,7 +28,7 @@ export const authConfig: NextAuthConfig = {
         }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID || "",
-            clientId: process.env.GOOGLE_CLIENT_SECRET || "",
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
         }),
     ],
     pages: {

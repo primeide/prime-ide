@@ -10,7 +10,13 @@ export default function Footer() {
                 <div className={styles.footerContent}>
                     <div className={styles.footerSection}>
                         <h3 className={styles.footerLogo}>
-                            <span>Prime</span><span className={styles.logoAccent}>IDE</span>
+                            <div style={{ position: 'relative', width: '150px', height: '40px' }}>
+                                <img
+                                    src="/logo.png"
+                                    alt="Prime IDE"
+                                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                />
+                            </div>
                         </h3>
                         <p className={styles.tagline}>
                             AI-Powered Digital Solutions for Modern Businesses
