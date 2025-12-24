@@ -24,5 +24,31 @@
     "status": "NEW",
     "createdAt": "2025-12-23T09:01:07.389Z",
     "updatedAt": "2025-12-23T09:01:07.389Z"
+  },
+  {
+    "id": "1766570577533",
+    "name": "jagannathan",
+    "email": "jagannathancs1@gmai.com",
+    "phone": "77369-31740",
+    "propertyName": "Prime IDE",
+    "location": "cherthala",
+    "requirement": "yeah",
+    "platform": "Full Online Booking System",
+    "status": "NEW",
+    "createdAt": "2025-12-24T10:02:57.534Z",
+    "updatedAt": "2025-12-24T10:02:57.534Z"
+  },
+  {
+    "id": "1766570624043",
+    "name": "jagannathan",
+    "email": "jagannathancs1@gmai.com",
+    "phone": "77369-31740",
+    "propertyName": "Prime IDE",
+    "location": "cherthala",
+    "requirement": "rr",
+    "platform": "Direct Booking Starter Plan",
+    "status": "NEW",
+    "createdAt": "2025-12-24T10:03:44.043Z",
+    "updatedAt": "2025-12-24T10:03:44.043Z"
   }
 ]

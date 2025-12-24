@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './page.module.css';
 
 export default function AdminLogin() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get('callbackUrl') || '/admin';
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -19,15 +22,18 @@ export default function AdminLogin() {
         setIsLoading(true);
 
         try {
-            // Placeholder for authentication logic
-            // In production, this would call your authentication API
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const result = await signIn('credentials', {
+                email: formData.email,
+                password: formData.password,
+                redirect: false,
+                callbackUrl,
+            });
 
-            // For demo purposes, accept any credentials
-            if (formData.email && formData.password) {
-                router.push('/admin');
+            if (result?.error) {
+                setError('Invalid email or password');
             } else {
-                setError('Please enter both email and password');
+                router.push(callbackUrl);
+                router.refresh();
             }
         } catch (err) {
             setError('Login failed. Please try again.');

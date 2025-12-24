@@ -35,6 +35,17 @@ export const authConfig: NextAuthConfig = {
         signIn: "/admin/login",
     },
     callbacks: {
+        authorized({ auth, request: { nextUrl } }) {
+            const isLoggedIn = !!auth?.user;
+            const isOnAdmin = nextUrl.pathname.startsWith('/admin');
+            const isLoginPage = nextUrl.pathname.startsWith('/admin/login');
+
+            if (isOnAdmin && !isLoginPage) {
+                if (isLoggedIn) return true;
+                return false; // Redirect unauthenticated users to login page
+            }
+            return true;
+        },
         async jwt({ token, user }) {
             if (user) {
                 token.role = (user as any).role

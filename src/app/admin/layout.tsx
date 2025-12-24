@@ -1,8 +1,26 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 import styles from './layout.module.css';
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+import { headers } from "next/headers";
+
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+    const session = await auth();
+    const headersList = await headers();
+    const fullPath = headersList.get("x-invoke-path") || "";
+    const isLoginPage = fullPath.startsWith("/admin/login");
+
+    if (!session && !isLoginPage) {
+        redirect("/admin/login");
+    }
+
+    // If on login page, don't show admin sidebar/layout structure
+    if (isLoginPage) {
+        return <>{children}</>;
+    }
+
     return (
         <div className={styles.adminLayout}>
             <aside className={styles.sidebar}>

@@ -1,11 +1,15 @@
 'use client';
 
+import { usePathname } from 'next/navigation';
 import styles from './WhatsAppFloat.module.css';
 
 export default function WhatsAppFloat() {
     const phoneNumber = '917907373687';
     const message = 'Hi! I would like to know more about Prime IDE services.';
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    const pathname = usePathname();
+
+    if (pathname?.startsWith('/admin')) return null;
 
     return (
         <a
