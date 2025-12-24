@@ -1,22 +1,7 @@
 import { NextResponse } from 'next/server';
-import { writeFile, readFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
-
-const DATA_DIR = path.join(process.cwd(), 'data');
-const LEADS_FILE = path.join(DATA_DIR, 'leads.json');
+import { getDb } from '@/lib/mongodb';
 
 export const dynamic = 'force-dynamic';
-
-// Ensure data directory exists
-async function ensureDataDir() {
-    if (!existsSync(DATA_DIR)) {
-        await mkdir(DATA_DIR, { recursive: true });
-    }
-    if (!existsSync(LEADS_FILE)) {
-        await writeFile(LEADS_FILE, JSON.stringify([]));
-    }
-}
 
 export async function POST(request: Request) {
     try {
@@ -31,35 +16,22 @@ export async function POST(request: Request) {
             );
         }
 
-        // Ensure data directory exists
-        await ensureDataDir();
-
-        // Read existing leads
-        const fileContent = await readFile(LEADS_FILE, 'utf-8');
-        const leads = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
 
         // Create new lead
         const newLead = {
-            id: Date.now().toString(),
             ...body,
             status: 'NEW',
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
 
-        // Add to leads array
-        leads.push(newLead);
-
-        // Save back to file
-        await writeFile(LEADS_FILE, JSON.stringify(leads, null, 2));
-
-        // TODO: Send email notification to admin
-        // TODO: Send auto-reply to customer
+        const result = await db.collection('leads').insertOne(newLead);
 
         return NextResponse.json({
             success: true,
             message: 'Thank you! We\'ll get back to you within 24 hours.',
-            lead: newLead
+            lead: { ...newLead, id: result.insertedId.toString(), _id: result.insertedId.toString() }
         });
 
     } catch (error: any) {
@@ -73,11 +45,19 @@ export async function POST(request: Request) {
 
 export async function GET() {
     try {
-        await ensureDataDir();
-        const fileContent = await readFile(LEADS_FILE, 'utf-8');
-        const leads = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const leads = await db.collection('leads')
+            .find({})
+            .sort({ createdAt: -1 })
+            .toArray();
 
-        return NextResponse.json({ leads });
+        const formattedLeads = leads.map(lead => ({
+            ...lead,
+            id: lead._id.toString(),
+            _id: lead._id.toString()
+        }));
+
+        return NextResponse.json({ leads: formattedLeads });
     } catch (error: any) {
         console.error('Error reading leads:', error);
         return NextResponse.json(

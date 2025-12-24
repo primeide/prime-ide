@@ -1,29 +1,24 @@
 import { NextResponse } from 'next/server';
-import { writeFile, readFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
-
-const DATA_DIR = path.join(process.cwd(), 'data');
-const TESTIMONIALS_FILE = path.join(DATA_DIR, 'testimonials.json');
+import { getDb } from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export const dynamic = 'force-dynamic';
 
-async function ensureDataDir() {
-    if (!existsSync(DATA_DIR)) {
-        await mkdir(DATA_DIR, { recursive: true });
-    }
-    if (!existsSync(TESTIMONIALS_FILE)) {
-        await writeFile(TESTIMONIALS_FILE, JSON.stringify([]));
-    }
-}
-
 export async function GET() {
     try {
-        await ensureDataDir();
-        const fileContent = await readFile(TESTIMONIALS_FILE, 'utf-8');
-        const testimonials = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const testimonials = await db.collection('testimonials')
+            .find({})
+            .sort({ createdAt: -1 })
+            .toArray();
 
-        return NextResponse.json({ testimonials });
+        const formattedTestimonials = testimonials.map(t => ({
+            ...t,
+            id: t._id.toString(),
+            _id: t._id.toString()
+        }));
+
+        return NextResponse.json({ testimonials: formattedTestimonials });
     } catch (error: any) {
         console.error('Error reading testimonials:', error);
         return NextResponse.json({
@@ -36,22 +31,20 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-
-        await ensureDataDir();
-        const fileContent = await readFile(TESTIMONIALS_FILE, 'utf-8');
-        const testimonials = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
 
         const newTestimonial = {
-            id: Date.now().toString(),
             ...body,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
 
-        testimonials.push(newTestimonial);
-        await writeFile(TESTIMONIALS_FILE, JSON.stringify(testimonials, null, 2));
+        const result = await db.collection('testimonials').insertOne(newTestimonial);
 
-        return NextResponse.json({ success: true, testimonial: newTestimonial });
+        return NextResponse.json({
+            success: true,
+            testimonial: { ...newTestimonial, id: result.insertedId.toString(), _id: result.insertedId.toString() }
+        });
     } catch (error: any) {
         console.error('Error creating testimonial:', error);
         return NextResponse.json({
@@ -64,30 +57,33 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
     try {
         const body = await request.json();
-        const { id, ...updates } = body;
+        const { id, _id, ...updates } = body;
+        const targetId = id || _id;
 
-        if (!id) {
+        if (!targetId) {
             return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
         }
 
-        await ensureDataDir();
-        const fileContent = await readFile(TESTIMONIALS_FILE, 'utf-8');
-        const testimonials = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const result = await db.collection('testimonials').findOneAndUpdate(
+            { _id: new ObjectId(targetId) },
+            {
+                $set: {
+                    ...updates,
+                    updatedAt: new Date().toISOString()
+                }
+            },
+            { returnDocument: 'after' }
+        );
 
-        const index = testimonials.findIndex((t: any) => String(t.id) === String(id));
-
-        if (index === -1) {
+        if (!result) {
             return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
         }
 
-        testimonials[index] = {
-            ...testimonials[index],
-            ...updates,
-            updatedAt: new Date().toISOString()
-        };
-
-        await writeFile(TESTIMONIALS_FILE, JSON.stringify(testimonials, null, 2));
-        return NextResponse.json({ success: true, testimonial: testimonials[index] });
+        return NextResponse.json({
+            success: true,
+            testimonial: { ...result, id: result._id.toString(), _id: result._id.toString() }
+        });
     } catch (error: any) {
         console.error('Error updating testimonial:', error);
         return NextResponse.json({
@@ -106,17 +102,15 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
         }
 
-        await ensureDataDir();
-        const fileContent = await readFile(TESTIMONIALS_FILE, 'utf-8');
-        const testimonials = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const result = await db.collection('testimonials').deleteOne({
+            _id: new ObjectId(id)
+        });
 
-        const filteredTestimonials = testimonials.filter((t: any) => String(t.id) !== String(id));
-
-        if (filteredTestimonials.length === testimonials.length) {
+        if (result.deletedCount === 0) {
             return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
         }
 
-        await writeFile(TESTIMONIALS_FILE, JSON.stringify(filteredTestimonials, null, 2));
         return NextResponse.json({ success: true, message: 'Testimonial deleted successfully' });
     } catch (error: any) {
         console.error('Error deleting testimonial:', error);

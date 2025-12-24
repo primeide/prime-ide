@@ -1,35 +1,29 @@
 import { NextResponse } from 'next/server';
-import { writeFile, readFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
-
-const DATA_DIR = path.join(process.cwd(), 'data');
-const DEMOS_FILE = path.join(DATA_DIR, 'demos.json');
+import { getDb } from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export const dynamic = 'force-dynamic';
 
-async function ensureDataDir() {
-    if (!existsSync(DATA_DIR)) {
-        await mkdir(DATA_DIR, { recursive: true });
-    }
-    if (!existsSync(DEMOS_FILE)) {
-        await writeFile(DEMOS_FILE, JSON.stringify([]));
-    }
-}
-
 export async function GET() {
     try {
-        await ensureDataDir();
-        const fileContent = await readFile(DEMOS_FILE, 'utf-8');
-        const demos = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const demos = await db.collection('demos')
+            .find({})
+            .sort({ createdAt: -1 })
+            .toArray();
 
-        return NextResponse.json({ demos });
+        const formattedDemos = demos.map(demo => ({
+            ...demo,
+            id: demo._id.toString(),
+            _id: demo._id.toString()
+        }));
+
+        return NextResponse.json({ demos: formattedDemos });
     } catch (error: any) {
         console.error('Error reading demos:', error);
         return NextResponse.json({
             error: 'Failed to read demos',
-            details: error.message,
-            path: DEMOS_FILE
+            details: error.message
         }, { status: 500 });
     }
 }
@@ -37,22 +31,20 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-
-        await ensureDataDir();
-        const fileContent = await readFile(DEMOS_FILE, 'utf-8');
-        const demos = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
 
         const newDemo = {
-            id: Date.now().toString(),
             ...body,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
 
-        demos.push(newDemo);
-        await writeFile(DEMOS_FILE, JSON.stringify(demos, null, 2));
+        const result = await db.collection('demos').insertOne(newDemo);
 
-        return NextResponse.json({ success: true, demo: newDemo });
+        return NextResponse.json({
+            success: true,
+            demo: { ...newDemo, id: result.insertedId.toString(), _id: result.insertedId.toString() }
+        });
     } catch (error: any) {
         console.error('Error creating demo:', error);
         return NextResponse.json({
@@ -65,30 +57,33 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
     try {
         const body = await request.json();
-        const { id, ...updates } = body;
+        const { id, _id, ...updates } = body;
+        const targetId = id || _id;
 
-        if (!id) {
+        if (!targetId) {
             return NextResponse.json({ error: 'Demo ID is required' }, { status: 400 });
         }
 
-        await ensureDataDir();
-        const fileContent = await readFile(DEMOS_FILE, 'utf-8');
-        const demos = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const result = await db.collection('demos').findOneAndUpdate(
+            { _id: new ObjectId(targetId) },
+            {
+                $set: {
+                    ...updates,
+                    updatedAt: new Date().toISOString()
+                }
+            },
+            { returnDocument: 'after' }
+        );
 
-        const index = demos.findIndex((d: any) => String(d.id) === String(id));
-
-        if (index === -1) {
+        if (!result) {
             return NextResponse.json({ error: 'Demo not found' }, { status: 404 });
         }
 
-        demos[index] = {
-            ...demos[index],
-            ...updates,
-            updatedAt: new Date().toISOString()
-        };
-
-        await writeFile(DEMOS_FILE, JSON.stringify(demos, null, 2));
-        return NextResponse.json({ success: true, demo: demos[index] });
+        return NextResponse.json({
+            success: true,
+            demo: { ...result, id: result._id.toString(), _id: result._id.toString() }
+        });
     } catch (error: any) {
         console.error('Error updating demo:', error);
         return NextResponse.json({
@@ -107,17 +102,15 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'Demo ID is required' }, { status: 400 });
         }
 
-        await ensureDataDir();
-        const fileContent = await readFile(DEMOS_FILE, 'utf-8');
-        const demos = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const result = await db.collection('demos').deleteOne({
+            _id: new ObjectId(id)
+        });
 
-        const filteredDemos = demos.filter((d: any) => String(d.id) !== String(id));
-
-        if (filteredDemos.length === demos.length) {
+        if (result.deletedCount === 0) {
             return NextResponse.json({ error: 'Demo not found' }, { status: 404 });
         }
 
-        await writeFile(DEMOS_FILE, JSON.stringify(filteredDemos, null, 2));
         return NextResponse.json({ success: true, message: 'Demo deleted successfully' });
     } catch (error: any) {
         console.error('Error deleting demo:', error);

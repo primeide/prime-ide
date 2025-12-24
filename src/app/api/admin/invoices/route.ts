@@ -1,29 +1,24 @@
 import { NextResponse } from 'next/server';
-import { writeFile, readFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
-
-const DATA_DIR = path.join(process.cwd(), 'data');
-const INVOICES_FILE = path.join(DATA_DIR, 'invoices.json');
+import { getDb } from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export const dynamic = 'force-dynamic';
 
-async function ensureDataDir() {
-    if (!existsSync(DATA_DIR)) {
-        await mkdir(DATA_DIR, { recursive: true });
-    }
-    if (!existsSync(INVOICES_FILE)) {
-        await writeFile(INVOICES_FILE, JSON.stringify([]));
-    }
-}
-
 export async function GET() {
     try {
-        await ensureDataDir();
-        const fileContent = await readFile(INVOICES_FILE, 'utf-8');
-        const invoices = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const invoices = await db.collection('invoices')
+            .find({})
+            .sort({ createdAt: -1 })
+            .toArray();
 
-        return NextResponse.json({ invoices });
+        const formattedInvoices = invoices.map(inv => ({
+            ...inv,
+            id: inv._id.toString(),
+            _id: inv._id.toString()
+        }));
+
+        return NextResponse.json({ invoices: formattedInvoices });
     } catch (error: any) {
         console.error('Error reading invoices:', error);
         return NextResponse.json({
@@ -36,23 +31,21 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-
-        await ensureDataDir();
-        const fileContent = await readFile(INVOICES_FILE, 'utf-8');
-        const invoices = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
 
         const newInvoice = {
-            id: Date.now().toString(),
             invoiceNumber: `INV-${Date.now()}`,
             ...body,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
 
-        invoices.push(newInvoice);
-        await writeFile(INVOICES_FILE, JSON.stringify(invoices, null, 2));
+        const result = await db.collection('invoices').insertOne(newInvoice);
 
-        return NextResponse.json({ success: true, invoice: newInvoice });
+        return NextResponse.json({
+            success: true,
+            invoice: { ...newInvoice, id: result.insertedId.toString(), _id: result.insertedId.toString() }
+        });
     } catch (error: any) {
         console.error('Error creating invoice:', error);
         return NextResponse.json({
@@ -65,30 +58,33 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
     try {
         const body = await request.json();
-        const { id, ...updates } = body;
+        const { id, _id, ...updates } = body;
+        const targetId = id || _id;
 
-        if (!id) {
+        if (!targetId) {
             return NextResponse.json({ error: 'Invoice ID is required' }, { status: 400 });
         }
 
-        await ensureDataDir();
-        const fileContent = await readFile(INVOICES_FILE, 'utf-8');
-        const invoices = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const result = await db.collection('invoices').findOneAndUpdate(
+            { _id: new ObjectId(targetId) },
+            {
+                $set: {
+                    ...updates,
+                    updatedAt: new Date().toISOString()
+                }
+            },
+            { returnDocument: 'after' }
+        );
 
-        const invoiceIndex = invoices.findIndex((inv: any) => String(inv.id) === String(id));
-
-        if (invoiceIndex === -1) {
+        if (!result) {
             return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
         }
 
-        invoices[invoiceIndex] = {
-            ...invoices[invoiceIndex],
-            ...updates,
-            updatedAt: new Date().toISOString()
-        };
-
-        await writeFile(INVOICES_FILE, JSON.stringify(invoices, null, 2));
-        return NextResponse.json({ success: true, invoice: invoices[invoiceIndex] });
+        return NextResponse.json({
+            success: true,
+            invoice: { ...result, id: result._id.toString(), _id: result._id.toString() }
+        });
     } catch (error: any) {
         console.error('Error updating invoice:', error);
         return NextResponse.json({
@@ -107,17 +103,15 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'Invoice ID is required' }, { status: 400 });
         }
 
-        await ensureDataDir();
-        const fileContent = await readFile(INVOICES_FILE, 'utf-8');
-        const invoices = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const result = await db.collection('invoices').deleteOne({
+            _id: new ObjectId(id)
+        });
 
-        const filteredInvoices = invoices.filter((inv: any) => String(inv.id) !== String(id));
-
-        if (filteredInvoices.length === invoices.length) {
+        if (result.deletedCount === 0) {
             return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
         }
 
-        await writeFile(INVOICES_FILE, JSON.stringify(filteredInvoices, null, 2));
         return NextResponse.json({ success: true, message: 'Invoice deleted successfully' });
     } catch (error: any) {
         console.error('Error deleting invoice:', error);

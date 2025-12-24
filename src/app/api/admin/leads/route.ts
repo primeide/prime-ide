@@ -1,30 +1,26 @@
 import { NextResponse } from 'next/server';
-import { readFile, writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
-
-const DATA_DIR = path.join(process.cwd(), 'data');
-const LEADS_FILE = path.join(DATA_DIR, 'leads.json');
+import { getDb } from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export const dynamic = 'force-dynamic';
-
-async function ensureDataDir() {
-    if (!existsSync(DATA_DIR)) {
-        await mkdir(DATA_DIR, { recursive: true });
-    }
-    if (!existsSync(LEADS_FILE)) {
-        await writeFile(LEADS_FILE, JSON.stringify([]));
-    }
-}
 
 // GET - Fetch all leads
 export async function GET() {
     try {
-        await ensureDataDir();
-        const fileContent = await readFile(LEADS_FILE, 'utf-8');
-        const leads = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const leads = await db.collection('leads')
+            .find({})
+            .sort({ createdAt: -1 })
+            .toArray();
 
-        return NextResponse.json({ leads });
+        // Map _id to id for frontend compatibility
+        const formattedLeads = leads.map(lead => ({
+            ...lead,
+            id: lead._id.toString(),
+            _id: lead._id.toString()
+        }));
+
+        return NextResponse.json({ leads: formattedLeads });
     } catch (error: any) {
         console.error('Error reading leads:', error);
         return NextResponse.json(
@@ -38,30 +34,33 @@ export async function GET() {
 export async function PUT(request: Request) {
     try {
         const body = await request.json();
-        const { id, ...updates } = body;
+        const { id, _id, ...updates } = body;
+        const targetId = id || _id;
 
-        if (!id) {
+        if (!targetId) {
             return NextResponse.json({ error: 'Lead ID is required' }, { status: 400 });
         }
 
-        await ensureDataDir();
-        const fileContent = await readFile(LEADS_FILE, 'utf-8');
-        const leads = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const result = await db.collection('leads').findOneAndUpdate(
+            { _id: new ObjectId(targetId) },
+            {
+                $set: {
+                    ...updates,
+                    updatedAt: new Date().toISOString()
+                }
+            },
+            { returnDocument: 'after' }
+        );
 
-        const leadIndex = leads.findIndex((lead: any) => String(lead.id) === String(id));
-
-        if (leadIndex === -1) {
+        if (!result) {
             return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
         }
 
-        leads[leadIndex] = {
-            ...leads[leadIndex],
-            ...updates,
-            updatedAt: new Date().toISOString()
-        };
-
-        await writeFile(LEADS_FILE, JSON.stringify(leads, null, 2));
-        return NextResponse.json({ success: true, lead: leads[leadIndex] });
+        return NextResponse.json({
+            success: true,
+            lead: { ...result, id: result._id.toString(), _id: result._id.toString() }
+        });
     } catch (error: any) {
         console.error('Error updating lead:', error);
         return NextResponse.json({
@@ -81,17 +80,15 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'Lead ID is required' }, { status: 400 });
         }
 
-        await ensureDataDir();
-        const fileContent = await readFile(LEADS_FILE, 'utf-8');
-        const leads = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const result = await db.collection('leads').deleteOne({
+            _id: new ObjectId(id)
+        });
 
-        const filteredLeads = leads.filter((lead: any) => String(lead.id) !== String(id));
-
-        if (filteredLeads.length === leads.length) {
+        if (result.deletedCount === 0) {
             return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
         }
 
-        await writeFile(LEADS_FILE, JSON.stringify(filteredLeads, null, 2));
         return NextResponse.json({ success: true, message: 'Lead deleted successfully' });
     } catch (error: any) {
         console.error('Error deleting lead:', error);

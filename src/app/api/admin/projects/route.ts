@@ -1,29 +1,24 @@
 import { NextResponse } from 'next/server';
-import { writeFile, readFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
-
-const DATA_DIR = path.join(process.cwd(), 'data');
-const PROJECTS_FILE = path.join(DATA_DIR, 'projects.json');
+import { getDb } from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export const dynamic = 'force-dynamic';
 
-async function ensureDataDir() {
-    if (!existsSync(DATA_DIR)) {
-        await mkdir(DATA_DIR, { recursive: true });
-    }
-    if (!existsSync(PROJECTS_FILE)) {
-        await writeFile(PROJECTS_FILE, JSON.stringify([]));
-    }
-}
-
 export async function GET() {
     try {
-        await ensureDataDir();
-        const fileContent = await readFile(PROJECTS_FILE, 'utf-8');
-        const projects = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const projects = await db.collection('projects')
+            .find({})
+            .sort({ createdAt: -1 })
+            .toArray();
 
-        return NextResponse.json({ projects });
+        const formattedProjects = projects.map(project => ({
+            ...project,
+            id: project._id.toString(),
+            _id: project._id.toString()
+        }));
+
+        return NextResponse.json({ projects: formattedProjects });
     } catch (error: any) {
         console.error('Error reading projects:', error);
         return NextResponse.json({
@@ -36,22 +31,20 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const body = await request.json();
-
-        await ensureDataDir();
-        const fileContent = await readFile(PROJECTS_FILE, 'utf-8');
-        const projects = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
 
         const newProject = {
-            id: Date.now().toString(),
             ...body,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
 
-        projects.push(newProject);
-        await writeFile(PROJECTS_FILE, JSON.stringify(projects, null, 2));
+        const result = await db.collection('projects').insertOne(newProject);
 
-        return NextResponse.json({ success: true, project: newProject });
+        return NextResponse.json({
+            success: true,
+            project: { ...newProject, id: result.insertedId.toString(), _id: result.insertedId.toString() }
+        });
     } catch (error: any) {
         console.error('Error creating project:', error);
         return NextResponse.json({
@@ -64,30 +57,33 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
     try {
         const body = await request.json();
-        const { id, ...updates } = body;
+        const { id, _id, ...updates } = body;
+        const targetId = id || _id;
 
-        if (!id) {
+        if (!targetId) {
             return NextResponse.json({ error: 'Project ID is required' }, { status: 400 });
         }
 
-        await ensureDataDir();
-        const fileContent = await readFile(PROJECTS_FILE, 'utf-8');
-        const projects = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const result = await db.collection('projects').findOneAndUpdate(
+            { _id: new ObjectId(targetId) },
+            {
+                $set: {
+                    ...updates,
+                    updatedAt: new Date().toISOString()
+                }
+            },
+            { returnDocument: 'after' }
+        );
 
-        const projectIndex = projects.findIndex((p: any) => String(p.id) === String(id));
-
-        if (projectIndex === -1) {
+        if (!result) {
             return NextResponse.json({ error: 'Project not found' }, { status: 404 });
         }
 
-        projects[projectIndex] = {
-            ...projects[projectIndex],
-            ...updates,
-            updatedAt: new Date().toISOString()
-        };
-
-        await writeFile(PROJECTS_FILE, JSON.stringify(projects, null, 2));
-        return NextResponse.json({ success: true, project: projects[projectIndex] });
+        return NextResponse.json({
+            success: true,
+            project: { ...result, id: result._id.toString(), _id: result._id.toString() }
+        });
     } catch (error: any) {
         console.error('Error updating project:', error);
         return NextResponse.json({
@@ -106,17 +102,15 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'Project ID is required' }, { status: 400 });
         }
 
-        await ensureDataDir();
-        const fileContent = await readFile(PROJECTS_FILE, 'utf-8');
-        const projects = fileContent ? JSON.parse(fileContent) : [];
+        const db = await getDb();
+        const result = await db.collection('projects').deleteOne({
+            _id: new ObjectId(id)
+        });
 
-        const filteredProjects = projects.filter((p: any) => String(p.id) !== String(id));
-
-        if (filteredProjects.length === projects.length) {
+        if (result.deletedCount === 0) {
             return NextResponse.json({ error: 'Project not found' }, { status: 404 });
         }
 
-        await writeFile(PROJECTS_FILE, JSON.stringify(filteredProjects, null, 2));
         return NextResponse.json({ success: true, message: 'Project deleted successfully' });
     } catch (error: any) {
         console.error('Error deleting project:', error);
