@@ -61,12 +61,17 @@ export default function AdminDemosPage() {
             });
 
             if (response.ok) {
+                alert(editingDemo ? 'Demo updated successfully!' : 'Demo created successfully!');
                 fetchDemos();
                 setShowModal(false);
                 resetForm();
+            } else {
+                const data = await response.json();
+                alert('Error: ' + (data.error || 'Failed to save demo'));
             }
         } catch (error) {
             console.error('Error saving demo:', error);
+            alert('An unexpected error occurred. Please try again.');
         }
     };
 

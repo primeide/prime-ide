@@ -6,6 +6,8 @@ import path from 'path';
 const DATA_DIR = path.join(process.cwd(), 'data');
 const INVOICES_FILE = path.join(DATA_DIR, 'invoices.json');
 
+export const dynamic = 'force-dynamic';
+
 async function ensureDataDir() {
     if (!existsSync(DATA_DIR)) {
         await mkdir(DATA_DIR, { recursive: true });

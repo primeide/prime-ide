@@ -57,9 +57,9 @@ export default function DemoPreviews() {
                                         <div className={styles.demoIcon}>🏨</div>
                                     )}
                                     <div className={styles.demoOverlay}>
-                                        <Link href="/demos" className="btn btn-primary">
+                                        <a href={demo.url} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
                                             View Demo
-                                        </Link>
+                                        </a>
                                     </div>
                                 </div>
                                 <div className={styles.demoContent}>

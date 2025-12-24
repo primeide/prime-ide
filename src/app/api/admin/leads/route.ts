@@ -6,6 +6,8 @@ import path from 'path';
 const DATA_DIR = path.join(process.cwd(), 'data');
 const LEADS_FILE = path.join(DATA_DIR, 'leads.json');
 
+export const dynamic = 'force-dynamic';
+
 // GET - Fetch all leads
 export async function GET() {
     try {

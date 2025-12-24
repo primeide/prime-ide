@@ -63,12 +63,17 @@ export default function AdminTestimonialsPage() {
             });
 
             if (response.ok) {
+                alert(editingTestimonial ? 'Testimonial updated successfully!' : 'Testimonial created successfully!');
                 fetchTestimonials();
                 setShowModal(false);
                 resetForm();
+            } else {
+                const data = await response.json();
+                alert('Error: ' + (data.error || 'Failed to save testimonial'));
             }
         } catch (error) {
             console.error('Error saving testimonial:', error);
+            alert('An unexpected error occurred. Please try again.');
         }
     };
 
