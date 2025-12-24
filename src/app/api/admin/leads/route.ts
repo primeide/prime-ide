@@ -25,10 +25,10 @@ export async function GET() {
         const leads = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ leads });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error reading leads:', error);
         return NextResponse.json(
-            { error: 'Failed to read leads' },
+            { error: 'Failed to read leads', details: error.message },
             { status: 500 }
         );
     }
@@ -62,9 +62,12 @@ export async function PUT(request: Request) {
 
         await writeFile(LEADS_FILE, JSON.stringify(leads, null, 2));
         return NextResponse.json({ success: true, lead: leads[leadIndex] });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error updating lead:', error);
-        return NextResponse.json({ error: 'Failed to update lead' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to update lead',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -90,8 +93,11 @@ export async function DELETE(request: Request) {
 
         await writeFile(LEADS_FILE, JSON.stringify(filteredLeads, null, 2));
         return NextResponse.json({ success: true, message: 'Lead deleted successfully' });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error deleting lead:', error);
-        return NextResponse.json({ error: 'Failed to delete lead' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to delete lead',
+            details: error.message
+        }, { status: 500 });
     }
 }

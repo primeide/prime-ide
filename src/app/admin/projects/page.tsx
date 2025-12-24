@@ -69,12 +69,17 @@ export default function AdminProjectsPage() {
             });
 
             if (response.ok) {
+                alert(editingProject ? 'Project updated successfully!' : 'Project created successfully!');
                 fetchProjects();
                 setShowModal(false);
                 resetForm();
+            } else {
+                const data = await response.json();
+                alert('Error: ' + (data.error || 'Failed to save project') + '\nDetails: ' + (data.details || 'No details provided'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving project:', error);
+            alert('An unexpected error occurred: ' + error.message);
         }
     };
 
@@ -87,10 +92,15 @@ export default function AdminProjectsPage() {
             });
 
             if (response.ok) {
+                alert('Project deleted successfully!');
                 fetchProjects();
+            } else {
+                const data = await response.json();
+                alert('Error deleting project: ' + (data.error || 'Unknown error') + '\nDetails: ' + (data.details || 'No details provided'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting project:', error);
+            alert('An unexpected error occurred during deletion: ' + error.message);
         }
     };
 

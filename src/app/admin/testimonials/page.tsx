@@ -69,11 +69,11 @@ export default function AdminTestimonialsPage() {
                 resetForm();
             } else {
                 const data = await response.json();
-                alert('Error: ' + (data.error || 'Failed to save testimonial'));
+                alert('Error: ' + (data.error || 'Failed to save testimonial') + '\nDetails: ' + (data.details || 'No details provided'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving testimonial:', error);
-            alert('An unexpected error occurred. Please try again.');
+            alert('An unexpected error occurred: ' + error.message);
         }
     };
 
@@ -86,10 +86,15 @@ export default function AdminTestimonialsPage() {
             });
 
             if (response.ok) {
+                alert('Testimonial deleted successfully!');
                 fetchTestimonials();
+            } else {
+                const data = await response.json();
+                alert('Error deleting testimonial: ' + (data.error || 'Unknown error') + '\nDetails: ' + (data.details || 'No details provided'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting testimonial:', error);
+            alert('An unexpected error occurred during deletion: ' + error.message);
         }
     };
 

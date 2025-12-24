@@ -24,9 +24,12 @@ export async function GET() {
         const testimonials = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ testimonials });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error reading testimonials:', error);
-        return NextResponse.json({ error: 'Failed to read testimonials' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to read testimonials',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -49,9 +52,12 @@ export async function POST(request: Request) {
         await writeFile(TESTIMONIALS_FILE, JSON.stringify(testimonials, null, 2));
 
         return NextResponse.json({ success: true, testimonial: newTestimonial });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error creating testimonial:', error);
-        return NextResponse.json({ error: 'Failed to create testimonial' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to create testimonial',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -82,9 +88,12 @@ export async function PUT(request: Request) {
 
         await writeFile(TESTIMONIALS_FILE, JSON.stringify(testimonials, null, 2));
         return NextResponse.json({ success: true, testimonial: testimonials[index] });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error updating testimonial:', error);
-        return NextResponse.json({ error: 'Failed to update testimonial' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to update testimonial',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -109,8 +118,11 @@ export async function DELETE(request: Request) {
 
         await writeFile(TESTIMONIALS_FILE, JSON.stringify(filteredTestimonials, null, 2));
         return NextResponse.json({ success: true, message: 'Testimonial deleted successfully' });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error deleting testimonial:', error);
-        return NextResponse.json({ error: 'Failed to delete testimonial' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to delete testimonial',
+            details: error.message
+        }, { status: 500 });
     }
 }

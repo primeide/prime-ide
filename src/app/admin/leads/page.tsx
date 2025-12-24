@@ -54,11 +54,12 @@ export default function AdminLeadsPage() {
                 alert('Lead status updated!');
                 fetchLeads();
             } else {
-                alert('Failed to update lead status');
+                const data = await response.json();
+                alert('Error updating status: ' + (data.error || 'Failed') + '\nDetails: ' + (data.details || 'No details provided'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating lead:', error);
-            alert('Error connecting to server');
+            alert('An unexpected error occurred: ' + error.message);
         }
     };
 
@@ -74,11 +75,12 @@ export default function AdminLeadsPage() {
                 alert('Lead deleted successfully!');
                 fetchLeads();
             } else {
-                alert('Failed to delete lead');
+                const data = await response.json();
+                alert('Error deleting lead: ' + (data.error || 'Failed') + '\nDetails: ' + (data.details || 'No details provided'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting lead:', error);
-            alert('Error connecting to server');
+            alert('An unexpected error occurred: ' + error.message);
         }
     };
 

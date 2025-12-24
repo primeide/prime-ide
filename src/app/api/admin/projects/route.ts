@@ -24,9 +24,12 @@ export async function GET() {
         const projects = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ projects });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error reading projects:', error);
-        return NextResponse.json({ error: 'Failed to read projects' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to read projects',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -49,9 +52,12 @@ export async function POST(request: Request) {
         await writeFile(PROJECTS_FILE, JSON.stringify(projects, null, 2));
 
         return NextResponse.json({ success: true, project: newProject });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error creating project:', error);
-        return NextResponse.json({ error: 'Failed to create project' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to create project',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -82,9 +88,12 @@ export async function PUT(request: Request) {
 
         await writeFile(PROJECTS_FILE, JSON.stringify(projects, null, 2));
         return NextResponse.json({ success: true, project: projects[projectIndex] });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error updating project:', error);
-        return NextResponse.json({ error: 'Failed to update project' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to update project',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -109,8 +118,11 @@ export async function DELETE(request: Request) {
 
         await writeFile(PROJECTS_FILE, JSON.stringify(filteredProjects, null, 2));
         return NextResponse.json({ success: true, message: 'Project deleted successfully' });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error deleting project:', error);
-        return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to delete project',
+            details: error.message
+        }, { status: 500 });
     }
 }

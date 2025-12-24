@@ -62,10 +62,10 @@ export async function POST(request: Request) {
             lead: newLead
         });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error saving lead:', error);
         return NextResponse.json(
-            { error: 'Failed to save lead' },
+            { error: 'Failed to save lead', details: error.message },
             { status: 500 }
         );
     }
@@ -78,10 +78,10 @@ export async function GET() {
         const leads = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ leads });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error reading leads:', error);
         return NextResponse.json(
-            { error: 'Failed to read leads' },
+            { error: 'Failed to read leads', details: error.message },
             { status: 500 }
         );
     }

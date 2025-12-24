@@ -65,12 +65,17 @@ export default function AdminInvoicesPage() {
             });
 
             if (response.ok) {
+                alert(editingInvoice ? 'Invoice updated successfully!' : 'Invoice created successfully!');
                 fetchInvoices();
                 setShowModal(false);
                 resetForm();
+            } else {
+                const data = await response.json();
+                alert('Error: ' + (data.error || 'Failed to save invoice') + '\nDetails: ' + (data.details || 'No details provided'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving invoice:', error);
+            alert('An unexpected error occurred: ' + error.message);
         }
     };
 
@@ -83,10 +88,15 @@ export default function AdminInvoicesPage() {
             });
 
             if (response.ok) {
+                alert('Invoice deleted successfully!');
                 fetchInvoices();
+            } else {
+                const data = await response.json();
+                alert('Error deleting invoice: ' + (data.error || 'Unknown error') + '\nDetails: ' + (data.details || 'No details provided'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting invoice:', error);
+            alert('An unexpected error occurred during deletion: ' + error.message);
         }
     };
 
@@ -103,10 +113,15 @@ export default function AdminInvoicesPage() {
             });
 
             if (response.ok) {
+                alert('Invoice marked as paid!');
                 fetchInvoices();
+            } else {
+                const data = await response.json();
+                alert('Error updating invoice: ' + (data.error || 'Failed') + '\nDetails: ' + (data.details || 'No details provided'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating invoice:', error);
+            alert('An unexpected error occurred: ' + error.message);
         }
     };
 

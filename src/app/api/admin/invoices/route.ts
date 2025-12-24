@@ -24,9 +24,12 @@ export async function GET() {
         const invoices = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ invoices });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error reading invoices:', error);
-        return NextResponse.json({ error: 'Failed to read invoices' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to read invoices',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -50,9 +53,12 @@ export async function POST(request: Request) {
         await writeFile(INVOICES_FILE, JSON.stringify(invoices, null, 2));
 
         return NextResponse.json({ success: true, invoice: newInvoice });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error creating invoice:', error);
-        return NextResponse.json({ error: 'Failed to create invoice' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to create invoice',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -83,9 +89,12 @@ export async function PUT(request: Request) {
 
         await writeFile(INVOICES_FILE, JSON.stringify(invoices, null, 2));
         return NextResponse.json({ success: true, invoice: invoices[invoiceIndex] });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error updating invoice:', error);
-        return NextResponse.json({ error: 'Failed to update invoice' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to update invoice',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -110,8 +119,11 @@ export async function DELETE(request: Request) {
 
         await writeFile(INVOICES_FILE, JSON.stringify(filteredInvoices, null, 2));
         return NextResponse.json({ success: true, message: 'Invoice deleted successfully' });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error deleting invoice:', error);
-        return NextResponse.json({ error: 'Failed to delete invoice' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to delete invoice',
+            details: error.message
+        }, { status: 500 });
     }
 }

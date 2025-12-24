@@ -24,9 +24,13 @@ export async function GET() {
         const demos = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ demos });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error reading demos:', error);
-        return NextResponse.json({ error: 'Failed to read demos' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to read demos',
+            details: error.message,
+            path: DEMOS_FILE
+        }, { status: 500 });
     }
 }
 
@@ -49,9 +53,12 @@ export async function POST(request: Request) {
         await writeFile(DEMOS_FILE, JSON.stringify(demos, null, 2));
 
         return NextResponse.json({ success: true, demo: newDemo });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error creating demo:', error);
-        return NextResponse.json({ error: 'Failed to create demo' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to create demo',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -82,9 +89,12 @@ export async function PUT(request: Request) {
 
         await writeFile(DEMOS_FILE, JSON.stringify(demos, null, 2));
         return NextResponse.json({ success: true, demo: demos[index] });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error updating demo:', error);
-        return NextResponse.json({ error: 'Failed to update demo' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to update demo',
+            details: error.message
+        }, { status: 500 });
     }
 }
 
@@ -109,8 +119,11 @@ export async function DELETE(request: Request) {
 
         await writeFile(DEMOS_FILE, JSON.stringify(filteredDemos, null, 2));
         return NextResponse.json({ success: true, message: 'Demo deleted successfully' });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error deleting demo:', error);
-        return NextResponse.json({ error: 'Failed to delete demo' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to delete demo',
+            details: error.message
+        }, { status: 500 });
     }
 }

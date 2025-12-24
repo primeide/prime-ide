@@ -67,11 +67,11 @@ export default function AdminDemosPage() {
                 resetForm();
             } else {
                 const data = await response.json();
-                alert('Error: ' + (data.error || 'Failed to save demo'));
+                alert('Error: ' + (data.error || 'Failed to save demo') + '\nDetails: ' + (data.details || 'No details provided'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving demo:', error);
-            alert('An unexpected error occurred. Please try again.');
+            alert('An unexpected error occurred: ' + error.message);
         }
     };
 
@@ -84,10 +84,15 @@ export default function AdminDemosPage() {
             });
 
             if (response.ok) {
+                alert('Demo deleted successfully!');
                 fetchDemos();
+            } else {
+                const data = await response.json();
+                alert('Error deleting demo: ' + (data.error || 'Unknown error') + '\nDetails: ' + (data.details || 'No details provided'));
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting demo:', error);
+            alert('An unexpected error occurred during deletion: ' + error.message);
         }
     };
 
