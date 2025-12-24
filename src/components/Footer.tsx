@@ -60,7 +60,6 @@ export default function Footer() {
                     <div className={styles.footerBottomLinks}>
                         <Link href="/privacy">Privacy Policy</Link>
                         <Link href="/terms">Terms of Service</Link>
-                        <Link href="/admin/login" className={styles.adminLink}>🔐 Admin Panel</Link>
                     </div>
                 </div>
             </div>
