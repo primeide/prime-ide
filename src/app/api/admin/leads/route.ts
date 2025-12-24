@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readFile, writeFile } from 'fs/promises';
+import { readFile, writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 
@@ -8,13 +8,19 @@ const LEADS_FILE = path.join(DATA_DIR, 'leads.json');
 
 export const dynamic = 'force-dynamic';
 
+async function ensureDataDir() {
+    if (!existsSync(DATA_DIR)) {
+        await mkdir(DATA_DIR, { recursive: true });
+    }
+    if (!existsSync(LEADS_FILE)) {
+        await writeFile(LEADS_FILE, JSON.stringify([]));
+    }
+}
+
 // GET - Fetch all leads
 export async function GET() {
     try {
-        if (!existsSync(LEADS_FILE)) {
-            return NextResponse.json({ leads: [] });
-        }
-
+        await ensureDataDir();
         const fileContent = await readFile(LEADS_FILE, 'utf-8');
         const leads = JSON.parse(fileContent);
 
@@ -40,6 +46,7 @@ export async function PUT(request: Request) {
             );
         }
 
+        await ensureDataDir();
         const fileContent = await readFile(LEADS_FILE, 'utf-8');
         const leads = JSON.parse(fileContent);
 
@@ -87,6 +94,7 @@ export async function DELETE(request: Request) {
             );
         }
 
+        await ensureDataDir();
         const fileContent = await readFile(LEADS_FILE, 'utf-8');
         const leads = JSON.parse(fileContent);
 

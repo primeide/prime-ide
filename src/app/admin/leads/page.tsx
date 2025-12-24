@@ -51,10 +51,14 @@ export default function AdminLeadsPage() {
             });
 
             if (response.ok) {
+                alert('Lead status updated!');
                 fetchLeads();
+            } else {
+                alert('Failed to update lead status');
             }
         } catch (error) {
             console.error('Error updating lead:', error);
+            alert('Error connecting to server');
         }
     };
 
@@ -67,10 +71,14 @@ export default function AdminLeadsPage() {
             });
 
             if (response.ok) {
+                alert('Lead deleted successfully!');
                 fetchLeads();
+            } else {
+                alert('Failed to delete lead');
             }
         } catch (error) {
             console.error('Error deleting lead:', error);
+            alert('Error connecting to server');
         }
     };
 

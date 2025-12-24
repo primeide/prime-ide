@@ -57,7 +57,10 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        const { id, ...updates } = await request.json();
+        const body = await request.json();
+        const { id, ...updates } = body;
+
+        console.log('Updating demo with ID:', id, 'Updates:', updates);
 
         if (!id) {
             return NextResponse.json({ error: 'Demo ID is required' }, { status: 400 });
@@ -67,10 +70,11 @@ export async function PUT(request: Request) {
         const fileContent = await readFile(DEMOS_FILE, 'utf-8');
         const demos = JSON.parse(fileContent);
 
-        const index = demos.findIndex((d: any) => d.id === id);
+        const index = demos.findIndex((d: any) => String(d.id) === String(id));
 
         if (index === -1) {
-            return NextResponse.json({ error: 'Demo not found' }, { status: 404 });
+            console.error('Demo not found for ID:', id);
+            return NextResponse.json({ error: 'Demo not found in database' }, { status: 404 });
         }
 
         demos[index] = {
@@ -83,8 +87,8 @@ export async function PUT(request: Request) {
 
         return NextResponse.json({ success: true, demo: demos[index] });
     } catch (error) {
-        console.error('Error updating demo:', error);
-        return NextResponse.json({ error: 'Failed to update demo' }, { status: 500 });
+        console.error('CRITICAL: Error updating demo:', error);
+        return NextResponse.json({ error: 'System error: ' + (error instanceof Error ? error.message : 'Unknown error') }, { status: 500 });
     }
 }
 

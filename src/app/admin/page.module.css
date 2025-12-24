@@ -125,11 +125,26 @@
 .badge {
     display: inline-block;
     padding: var(--spacing-xs) var(--spacing-sm);
-    background: var(--color-primary);
     color: white;
     border-radius: var(--radius-sm);
     font-size: var(--text-xs);
     font-weight: 600;
+}
+
+.new {
+    background-color: var(--color-primary);
+}
+
+.in_progress {
+    background-color: #f59e0b;
+}
+
+.completed {
+    background-color: #10b981;
+}
+
+.archived {
+    background-color: var(--color-gray-500);
 }
 
 .projectList {
