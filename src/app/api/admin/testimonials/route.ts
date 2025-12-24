@@ -21,7 +21,7 @@ export async function GET() {
     try {
         await ensureDataDir();
         const fileContent = await readFile(TESTIMONIALS_FILE, 'utf-8');
-        const testimonials = JSON.parse(fileContent);
+        const testimonials = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ testimonials });
     } catch (error) {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
         await ensureDataDir();
         const fileContent = await readFile(TESTIMONIALS_FILE, 'utf-8');
-        const testimonials = JSON.parse(fileContent);
+        const testimonials = fileContent ? JSON.parse(fileContent) : [];
 
         const newTestimonial = {
             id: Date.now().toString(),
@@ -57,7 +57,8 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        const { id, ...updates } = await request.json();
+        const body = await request.json();
+        const { id, ...updates } = body;
 
         if (!id) {
             return NextResponse.json({ error: 'Testimonial ID is required' }, { status: 400 });
@@ -65,9 +66,9 @@ export async function PUT(request: Request) {
 
         await ensureDataDir();
         const fileContent = await readFile(TESTIMONIALS_FILE, 'utf-8');
-        const testimonials = JSON.parse(fileContent);
+        const testimonials = fileContent ? JSON.parse(fileContent) : [];
 
-        const index = testimonials.findIndex((t: any) => t.id === id);
+        const index = testimonials.findIndex((t: any) => String(t.id) === String(id));
 
         if (index === -1) {
             return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
@@ -80,7 +81,6 @@ export async function PUT(request: Request) {
         };
 
         await writeFile(TESTIMONIALS_FILE, JSON.stringify(testimonials, null, 2));
-
         return NextResponse.json({ success: true, testimonial: testimonials[index] });
     } catch (error) {
         console.error('Error updating testimonial:', error);
@@ -99,16 +99,15 @@ export async function DELETE(request: Request) {
 
         await ensureDataDir();
         const fileContent = await readFile(TESTIMONIALS_FILE, 'utf-8');
-        const testimonials = JSON.parse(fileContent);
+        const testimonials = fileContent ? JSON.parse(fileContent) : [];
 
-        const filteredTestimonials = testimonials.filter((t: any) => t.id !== id);
+        const filteredTestimonials = testimonials.filter((t: any) => String(t.id) !== String(id));
 
         if (filteredTestimonials.length === testimonials.length) {
             return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
         }
 
         await writeFile(TESTIMONIALS_FILE, JSON.stringify(filteredTestimonials, null, 2));
-
         return NextResponse.json({ success: true, message: 'Testimonial deleted successfully' });
     } catch (error) {
         console.error('Error deleting testimonial:', error);

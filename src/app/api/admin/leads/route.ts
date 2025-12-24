@@ -22,7 +22,7 @@ export async function GET() {
     try {
         await ensureDataDir();
         const fileContent = await readFile(LEADS_FILE, 'utf-8');
-        const leads = JSON.parse(fileContent);
+        const leads = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ leads });
     } catch (error) {
@@ -37,26 +37,21 @@ export async function GET() {
 // PUT - Update a lead
 export async function PUT(request: Request) {
     try {
-        const { id, ...updates } = await request.json();
+        const body = await request.json();
+        const { id, ...updates } = body;
 
         if (!id) {
-            return NextResponse.json(
-                { error: 'Lead ID is required' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Lead ID is required' }, { status: 400 });
         }
 
         await ensureDataDir();
         const fileContent = await readFile(LEADS_FILE, 'utf-8');
-        const leads = JSON.parse(fileContent);
+        const leads = fileContent ? JSON.parse(fileContent) : [];
 
-        const leadIndex = leads.findIndex((lead: any) => lead.id === id);
+        const leadIndex = leads.findIndex((lead: any) => String(lead.id) === String(id));
 
         if (leadIndex === -1) {
-            return NextResponse.json(
-                { error: 'Lead not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
         }
 
         leads[leadIndex] = {
@@ -66,18 +61,10 @@ export async function PUT(request: Request) {
         };
 
         await writeFile(LEADS_FILE, JSON.stringify(leads, null, 2));
-
-        return NextResponse.json({
-            success: true,
-            lead: leads[leadIndex]
-        });
-
+        return NextResponse.json({ success: true, lead: leads[leadIndex] });
     } catch (error) {
         console.error('Error updating lead:', error);
-        return NextResponse.json(
-            { error: 'Failed to update lead' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to update lead' }, { status: 500 });
     }
 }
 
@@ -88,37 +75,23 @@ export async function DELETE(request: Request) {
         const id = searchParams.get('id');
 
         if (!id) {
-            return NextResponse.json(
-                { error: 'Lead ID is required' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Lead ID is required' }, { status: 400 });
         }
 
         await ensureDataDir();
         const fileContent = await readFile(LEADS_FILE, 'utf-8');
-        const leads = JSON.parse(fileContent);
+        const leads = fileContent ? JSON.parse(fileContent) : [];
 
-        const filteredLeads = leads.filter((lead: any) => lead.id !== id);
+        const filteredLeads = leads.filter((lead: any) => String(lead.id) !== String(id));
 
         if (filteredLeads.length === leads.length) {
-            return NextResponse.json(
-                { error: 'Lead not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
         }
 
         await writeFile(LEADS_FILE, JSON.stringify(filteredLeads, null, 2));
-
-        return NextResponse.json({
-            success: true,
-            message: 'Lead deleted successfully'
-        });
-
+        return NextResponse.json({ success: true, message: 'Lead deleted successfully' });
     } catch (error) {
         console.error('Error deleting lead:', error);
-        return NextResponse.json(
-            { error: 'Failed to delete lead' },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: 'Failed to delete lead' }, { status: 500 });
     }
 }

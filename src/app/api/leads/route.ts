@@ -6,6 +6,8 @@ import path from 'path';
 const DATA_DIR = path.join(process.cwd(), 'data');
 const LEADS_FILE = path.join(DATA_DIR, 'leads.json');
 
+export const dynamic = 'force-dynamic';
+
 // Ensure data directory exists
 async function ensureDataDir() {
     if (!existsSync(DATA_DIR)) {
@@ -34,7 +36,7 @@ export async function POST(request: Request) {
 
         // Read existing leads
         const fileContent = await readFile(LEADS_FILE, 'utf-8');
-        const leads = JSON.parse(fileContent);
+        const leads = fileContent ? JSON.parse(fileContent) : [];
 
         // Create new lead
         const newLead = {
@@ -73,7 +75,7 @@ export async function GET() {
     try {
         await ensureDataDir();
         const fileContent = await readFile(LEADS_FILE, 'utf-8');
-        const leads = JSON.parse(fileContent);
+        const leads = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ leads });
     } catch (error) {

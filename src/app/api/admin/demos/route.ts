@@ -21,7 +21,7 @@ export async function GET() {
     try {
         await ensureDataDir();
         const fileContent = await readFile(DEMOS_FILE, 'utf-8');
-        const demos = JSON.parse(fileContent);
+        const demos = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ demos });
     } catch (error) {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
         await ensureDataDir();
         const fileContent = await readFile(DEMOS_FILE, 'utf-8');
-        const demos = JSON.parse(fileContent);
+        const demos = fileContent ? JSON.parse(fileContent) : [];
 
         const newDemo = {
             id: Date.now().toString(),
@@ -60,21 +60,18 @@ export async function PUT(request: Request) {
         const body = await request.json();
         const { id, ...updates } = body;
 
-        console.log('Updating demo with ID:', id, 'Updates:', updates);
-
         if (!id) {
             return NextResponse.json({ error: 'Demo ID is required' }, { status: 400 });
         }
 
         await ensureDataDir();
         const fileContent = await readFile(DEMOS_FILE, 'utf-8');
-        const demos = JSON.parse(fileContent);
+        const demos = fileContent ? JSON.parse(fileContent) : [];
 
         const index = demos.findIndex((d: any) => String(d.id) === String(id));
 
         if (index === -1) {
-            console.error('Demo not found for ID:', id);
-            return NextResponse.json({ error: 'Demo not found in database' }, { status: 404 });
+            return NextResponse.json({ error: 'Demo not found' }, { status: 404 });
         }
 
         demos[index] = {
@@ -84,11 +81,10 @@ export async function PUT(request: Request) {
         };
 
         await writeFile(DEMOS_FILE, JSON.stringify(demos, null, 2));
-
         return NextResponse.json({ success: true, demo: demos[index] });
     } catch (error) {
-        console.error('CRITICAL: Error updating demo:', error);
-        return NextResponse.json({ error: 'System error: ' + (error instanceof Error ? error.message : 'Unknown error') }, { status: 500 });
+        console.error('Error updating demo:', error);
+        return NextResponse.json({ error: 'Failed to update demo' }, { status: 500 });
     }
 }
 
@@ -103,16 +99,15 @@ export async function DELETE(request: Request) {
 
         await ensureDataDir();
         const fileContent = await readFile(DEMOS_FILE, 'utf-8');
-        const demos = JSON.parse(fileContent);
+        const demos = fileContent ? JSON.parse(fileContent) : [];
 
-        const filteredDemos = demos.filter((d: any) => d.id !== id);
+        const filteredDemos = demos.filter((d: any) => String(d.id) !== String(id));
 
         if (filteredDemos.length === demos.length) {
             return NextResponse.json({ error: 'Demo not found' }, { status: 404 });
         }
 
         await writeFile(DEMOS_FILE, JSON.stringify(filteredDemos, null, 2));
-
         return NextResponse.json({ success: true, message: 'Demo deleted successfully' });
     } catch (error) {
         console.error('Error deleting demo:', error);

@@ -21,7 +21,7 @@ export async function GET() {
     try {
         await ensureDataDir();
         const fileContent = await readFile(PROJECTS_FILE, 'utf-8');
-        const projects = JSON.parse(fileContent);
+        const projects = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ projects });
     } catch (error) {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
         await ensureDataDir();
         const fileContent = await readFile(PROJECTS_FILE, 'utf-8');
-        const projects = JSON.parse(fileContent);
+        const projects = fileContent ? JSON.parse(fileContent) : [];
 
         const newProject = {
             id: Date.now().toString(),
@@ -57,16 +57,18 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        const { id, ...updates } = await request.json();
+        const body = await request.json();
+        const { id, ...updates } = body;
 
         if (!id) {
             return NextResponse.json({ error: 'Project ID is required' }, { status: 400 });
         }
 
+        await ensureDataDir();
         const fileContent = await readFile(PROJECTS_FILE, 'utf-8');
-        const projects = JSON.parse(fileContent);
+        const projects = fileContent ? JSON.parse(fileContent) : [];
 
-        const projectIndex = projects.findIndex((p: any) => p.id === id);
+        const projectIndex = projects.findIndex((p: any) => String(p.id) === String(id));
 
         if (projectIndex === -1) {
             return NextResponse.json({ error: 'Project not found' }, { status: 404 });
@@ -79,7 +81,6 @@ export async function PUT(request: Request) {
         };
 
         await writeFile(PROJECTS_FILE, JSON.stringify(projects, null, 2));
-
         return NextResponse.json({ success: true, project: projects[projectIndex] });
     } catch (error) {
         console.error('Error updating project:', error);
@@ -96,17 +97,17 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'Project ID is required' }, { status: 400 });
         }
 
+        await ensureDataDir();
         const fileContent = await readFile(PROJECTS_FILE, 'utf-8');
-        const projects = JSON.parse(fileContent);
+        const projects = fileContent ? JSON.parse(fileContent) : [];
 
-        const filteredProjects = projects.filter((p: any) => p.id !== id);
+        const filteredProjects = projects.filter((p: any) => String(p.id) !== String(id));
 
         if (filteredProjects.length === projects.length) {
             return NextResponse.json({ error: 'Project not found' }, { status: 404 });
         }
 
         await writeFile(PROJECTS_FILE, JSON.stringify(filteredProjects, null, 2));
-
         return NextResponse.json({ success: true, message: 'Project deleted successfully' });
     } catch (error) {
         console.error('Error deleting project:', error);

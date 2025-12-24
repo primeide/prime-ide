@@ -21,7 +21,7 @@ export async function GET() {
     try {
         await ensureDataDir();
         const fileContent = await readFile(INVOICES_FILE, 'utf-8');
-        const invoices = JSON.parse(fileContent);
+        const invoices = fileContent ? JSON.parse(fileContent) : [];
 
         return NextResponse.json({ invoices });
     } catch (error) {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
 
         await ensureDataDir();
         const fileContent = await readFile(INVOICES_FILE, 'utf-8');
-        const invoices = JSON.parse(fileContent);
+        const invoices = fileContent ? JSON.parse(fileContent) : [];
 
         const newInvoice = {
             id: Date.now().toString(),
@@ -58,16 +58,18 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        const { id, ...updates } = await request.json();
+        const body = await request.json();
+        const { id, ...updates } = body;
 
         if (!id) {
             return NextResponse.json({ error: 'Invoice ID is required' }, { status: 400 });
         }
 
+        await ensureDataDir();
         const fileContent = await readFile(INVOICES_FILE, 'utf-8');
-        const invoices = JSON.parse(fileContent);
+        const invoices = fileContent ? JSON.parse(fileContent) : [];
 
-        const invoiceIndex = invoices.findIndex((inv: any) => inv.id === id);
+        const invoiceIndex = invoices.findIndex((inv: any) => String(inv.id) === String(id));
 
         if (invoiceIndex === -1) {
             return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
@@ -80,7 +82,6 @@ export async function PUT(request: Request) {
         };
 
         await writeFile(INVOICES_FILE, JSON.stringify(invoices, null, 2));
-
         return NextResponse.json({ success: true, invoice: invoices[invoiceIndex] });
     } catch (error) {
         console.error('Error updating invoice:', error);
@@ -97,17 +98,17 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'Invoice ID is required' }, { status: 400 });
         }
 
+        await ensureDataDir();
         const fileContent = await readFile(INVOICES_FILE, 'utf-8');
-        const invoices = JSON.parse(fileContent);
+        const invoices = fileContent ? JSON.parse(fileContent) : [];
 
-        const filteredInvoices = invoices.filter((inv: any) => inv.id !== id);
+        const filteredInvoices = invoices.filter((inv: any) => String(inv.id) !== String(id));
 
         if (filteredInvoices.length === invoices.length) {
             return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
         }
 
         await writeFile(INVOICES_FILE, JSON.stringify(filteredInvoices, null, 2));
-
         return NextResponse.json({ success: true, message: 'Invoice deleted successfully' });
     } catch (error) {
         console.error('Error deleting invoice:', error);
