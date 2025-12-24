@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './Footer.module.css';
+import { FaInstagram, FaFacebookF, FaLinkedinIn, FaWhatsapp } from 'react-icons/fa';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
@@ -30,6 +31,20 @@ export default function Footer() {
                         <p className={styles.description}>
                             Websites worth ₹1,49,999 — delivered for ₹24,999 using next-gen AI.
                         </p>
+                        <div className={styles.socialLinks}>
+                            <a href="https://www.instagram.com/prime.ide/" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Instagram">
+                                <FaInstagram />
+                            </a>
+                            <a href="https://www.facebook.com/prime.ide/" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="Facebook">
+                                <FaFacebookF />
+                            </a>
+                            <a href="https://www.linkedin.com/company/prime-ide" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="LinkedIn">
+                                <FaLinkedinIn />
+                            </a>
+                            <a href="https://wa.me/917907373687" target="_blank" rel="noopener noreferrer" className={styles.socialIcon} aria-label="WhatsApp">
+                                <FaWhatsapp />
+                            </a>
+                        </div>
                     </div>
 
                     <div className={styles.footerSection}>

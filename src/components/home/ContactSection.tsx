@@ -1,4 +1,5 @@
 import styles from './ContactSection.module.css';
+import { FaInstagram, FaFacebookF, FaLinkedinIn, FaWhatsapp, FaEnvelope, FaPhoneAlt } from 'react-icons/fa';
 
 export default function ContactSection() {
     return (
@@ -11,9 +12,31 @@ export default function ContactSection() {
                             Ready to transform your business online? Let's discuss your project!
                         </p>
 
+                        <div className={styles.socialFollow}>
+                            <h3>Follow Our Journey</h3>
+                            <div className={styles.socialGrid}>
+                                <a href="https://www.instagram.com/prime.ide/" target="_blank" rel="noopener noreferrer" className={`${styles.socialLink} ${styles.instagram}`}>
+                                    <FaInstagram />
+                                    <span>Instagram</span>
+                                </a>
+                                <a href="https://www.facebook.com/prime.ide/" target="_blank" rel="noopener noreferrer" className={`${styles.socialLink} ${styles.facebook}`}>
+                                    <FaFacebookF />
+                                    <span>Facebook</span>
+                                </a>
+                                <a href="https://www.linkedin.com/company/prime-ide" target="_blank" rel="noopener noreferrer" className={`${styles.socialLink} ${styles.linkedin}`}>
+                                    <FaLinkedinIn />
+                                    <span>LinkedIn</span>
+                                </a>
+                                <a href="https://wa.me/917907373687" target="_blank" rel="noopener noreferrer" className={`${styles.socialLink} ${styles.whatsapp}`}>
+                                    <FaWhatsapp />
+                                    <span>WhatsApp</span>
+                                </a>
+                            </div>
+                        </div>
+
                         <div className={styles.contactMethods}>
                             <div className={styles.contactMethod}>
-                                <div className={styles.methodIcon}>📧</div>
+                                <div className={`${styles.methodIcon} ${styles.emailIcon}`}><FaEnvelope /></div>
                                 <div>
                                     <h3>Email</h3>
                                     <a href="mailto:primeidecompany@gmail.com">primeidecompany@gmail.com</a>
@@ -21,24 +44,10 @@ export default function ContactSection() {
                             </div>
 
                             <div className={styles.contactMethod}>
-                                <div className={styles.methodIcon}>📱</div>
+                                <div className={`${styles.methodIcon} ${styles.phoneIcon}`}><FaPhoneAlt /></div>
                                 <div>
                                     <h3>Phone</h3>
                                     <a href="tel:+917907373687">+91 7907373687</a>
-                                </div>
-                            </div>
-
-                            <div className={styles.contactMethod}>
-                                <div className={styles.methodIcon}>💬</div>
-                                <div>
-                                    <h3>WhatsApp</h3>
-                                    <a
-                                        href="https://wa.me/917907373687?text=Hi! I would like to know more about Prime IDE services."
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        Chat with us
-                                    </a>
                                 </div>
                             </div>
                         </div>

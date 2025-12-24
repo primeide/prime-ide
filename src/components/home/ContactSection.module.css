@@ -21,14 +21,86 @@
 .subtitle {
     font-size: var(--text-lg);
     color: var(--color-gray-600);
-    margin-bottom: var(--spacing-2xl);
+    margin-bottom: var(--spacing-xl);
     line-height: 1.6;
+}
+
+.socialFollow {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.socialFollow h3 {
+    font-size: var(--text-md);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-gray-500);
+    margin-bottom: var(--spacing-md);
+    font-weight: 700;
+}
+
+.socialGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+}
+
+.socialLink {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: white;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--color-black);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid var(--color-gray-100);
+}
+
+.socialLink svg {
+    font-size: 1.25rem;
+}
+
+.socialLink span {
+    transition: transform 0.3s ease;
+}
+
+.socialLink:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+}
+
+.socialLink:hover span {
+    transform: translateX(3px);
+}
+
+.instagram:hover {
+    color: #E1306C;
+    border-color: #E1306C;
+}
+
+.facebook:hover {
+    color: #1877F2;
+    border-color: #1877F2;
+}
+
+.linkedin:hover {
+    color: #0077B5;
+    border-color: #0077B5;
+}
+
+.whatsapp:hover {
+    color: #25D366;
+    border-color: #25D366;
 }
 
 .contactMethods {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
     margin-bottom: var(--spacing-2xl);
 }
 
@@ -48,8 +120,24 @@
 }
 
 .methodIcon {
-    font-size: 2.5rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    font-size: 1.5rem;
     flex-shrink: 0;
+}
+
+.emailIcon {
+    background: rgba(14, 118, 168, 0.1);
+    color: var(--color-primary);
+}
+
+.phoneIcon {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10B981;
 }
 
 .contactMethod h3 {
