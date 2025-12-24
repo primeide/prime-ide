@@ -8,16 +8,13 @@ import { headers } from "next/headers";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
     const session = await auth();
-    const headersList = await headers();
-    const fullPath = headersList.get("x-invoke-path") || "";
-    const isLoginPage = fullPath.startsWith("/admin/login");
 
-    if (!session && !isLoginPage) {
-        redirect("/admin/login");
-    }
+    // If no session, the middleware will handle the redirect to /admin/login
+    // However, if we are ON the login page, we want a clean view
+    // We can't easily check the path here without headers (which were failing), 
+    // so we'll check if session exists. If it does, show sidebar. If not, just children.
 
-    // If on login page, don't show admin sidebar/layout structure
-    if (isLoginPage) {
+    if (!session) {
         return <>{children}</>;
     }
 

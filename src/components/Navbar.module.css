@@ -6,7 +6,11 @@
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
     z-index: var(--z-sticky);
-    transition: all var(--transition-base);
+    transition: transform 0.4s ease-in-out, background-color var(--transition-base), box-shadow var(--transition-base);
+}
+
+.navbarHidden {
+    transform: translateY(-100%);
 }
 
 .navContent {

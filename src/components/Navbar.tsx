@@ -1,18 +1,41 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import styles from './Navbar.module.css';
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
     const pathname = usePathname();
+
+    useEffect(() => {
+        const controlNavbar = () => {
+            if (typeof window !== 'undefined') {
+                if (window.scrollY > lastScrollY && window.scrollY > 100) { // Scrolling down
+                    setIsVisible(false);
+                    setIsMenuOpen(false); // Close menu if scrolling down
+                } else { // Scrolling up
+                    setIsVisible(true);
+                }
+                setLastScrollY(window.scrollY);
+            }
+        };
+
+        if (typeof window !== 'undefined') {
+            window.addEventListener('scroll', controlNavbar);
+            return () => {
+                window.removeEventListener('scroll', controlNavbar);
+            };
+        }
+    }, [lastScrollY]);
 
     if (pathname?.startsWith('/admin')) return null;
 
     return (
-        <nav className={styles.navbar}>
+        <nav className={`${styles.navbar} ${!isVisible ? styles.navbarHidden : ''}`}>
             <div className="container">
                 <div className={styles.navContent}>
                     <Link href="/" className={styles.logo}>
