@@ -1,0 +1,320 @@
+.settingsPage {
+    padding: var(--spacing-xl);
+}
+
+.header {
+    margin-bottom: var(--spacing-2xl);
+}
+
+.header h1 {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--color-black);
+}
+
+.settingsContainer {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: var(--spacing-2xl);
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.sidebar button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: white;
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+}
+
+.sidebar button:hover {
+    border-color: var(--color-primary);
+    background: var(--color-gray-50);
+}
+
+.sidebar button.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
+.icon {
+    font-size: var(--text-xl);
+}
+
+.content {
+    background: white;
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2xl);
+    box-shadow: var(--shadow-md);
+}
+
+.section h2 {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--color-black);
+    margin-bottom: var(--spacing-sm);
+}
+
+.description {
+    color: var(--color-gray-600);
+    margin-bottom: var(--spacing-2xl);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    max-width: 600px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.formGroup label {
+    font-weight: 600;
+    color: var(--color-gray-700);
+}
+
+.formGroup input {
+    padding: var(--spacing-sm);
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    font-size: var(--text-base);
+    transition: border-color var(--transition-fast);
+}
+
+.formGroup input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.toggleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+}
+
+.toggleItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+}
+
+.toggleLabel {
+    font-weight: 600;
+    color: var(--color-black);
+    margin-bottom: var(--spacing-xs);
+}
+
+.toggleDescription {
+    font-size: var(--text-sm);
+    color: var(--color-gray-600);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-gray-300);
+    transition: var(--transition-base);
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: var(--transition-base);
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--color-primary);
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+.securityInfo {
+    margin-top: var(--spacing-2xl);
+    padding: var(--spacing-lg);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+}
+
+.securityInfo h3 {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    color: var(--color-black);
+}
+
+.securityInfo ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.securityInfo li {
+    padding: var(--spacing-xs) 0;
+    color: var(--color-gray-700);
+}
+
+.securityInfo li:before {
+    content: "✓ ";
+    color: var(--color-success);
+    font-weight: bold;
+    margin-right: var(--spacing-xs);
+}
+
+.billingCard {
+    padding: var(--spacing-xl);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-2xl);
+}
+
+.billingHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.billingHeader h3 {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-black);
+}
+
+.planBadge {
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--color-primary);
+    color: white;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 700;
+}
+
+.billingDetails {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.billingItem {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.paymentMethods {
+    margin-top: var(--spacing-2xl);
+}
+
+.paymentMethods h3 {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-black);
+}
+
+.paymentCard {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: var(--color-gray-50);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.cardIcon {
+    font-size: 2rem;
+}
+
+.cardDetails {
+    flex: 1;
+}
+
+.cardName {
+    font-weight: 600;
+    color: var(--color-black);
+    margin-bottom: var(--spacing-xs);
+}
+
+.cardExpiry {
+    font-size: var(--text-sm);
+    color: var(--color-gray-600);
+}
+
+.removeBtn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: var(--color-error);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity var(--transition-fast);
+}
+
+.removeBtn:hover {
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .settingsContainer {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .sidebar button {
+        white-space: nowrap;
+    }
+}

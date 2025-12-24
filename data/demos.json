@@ -1,0 +1,68 @@
+[
+    {
+        "id": "1",
+        "title": "Luxury Beach Resort",
+        "type": "Hotel",
+        "thumbnail": "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800&auto=format&fit=crop",
+        "description": "Premium beachfront resort with booking system",
+        "url": "#",
+        "status": "ACTIVE",
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "updatedAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+        "id": "2",
+        "title": "Mountain Homestay",
+        "type": "Homestay",
+        "thumbnail": "https://images.unsplash.com/photo-1518780664697-55e3ad937233?q=80&w=800&auto=format&fit=crop",
+        "description": "Cozy mountain retreat with online reservations",
+        "url": "#",
+        "status": "ACTIVE",
+        "createdAt": "2024-01-02T00:00:00.000Z",
+        "updatedAt": "2024-01-02T00:00:00.000Z"
+    },
+    {
+        "id": "3",
+        "title": "City Business Hotel",
+        "type": "Hotel",
+        "thumbnail": "https://images.unsplash.com/photo-1564501049412-61c2a3083791?q=80&w=800&auto=format&fit=crop",
+        "description": "Modern business hotel with conference facilities",
+        "url": "#",
+        "status": "ACTIVE",
+        "createdAt": "2024-01-03T00:00:00.000Z",
+        "updatedAt": "2024-01-03T00:00:00.000Z"
+    },
+    {
+        "id": "4",
+        "title": "Boutique Villa",
+        "type": "Villa",
+        "thumbnail": "https://images.unsplash.com/photo-1580587771525-78b9dba3b91d?q=80&w=800&auto=format&fit=crop",
+        "description": "Exclusive villa rental with instant booking",
+        "url": "#",
+        "status": "ACTIVE",
+        "createdAt": "2024-01-04T00:00:00.000Z",
+        "updatedAt": "2024-01-04T00:00:00.000Z"
+    },
+    {
+        "id": "5",
+        "title": "Restaurant & Cafe",
+        "type": "Business",
+        "thumbnail": "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800&auto=format&fit=crop",
+        "description": "Restaurant website with online menu & reservations",
+        "url": "#",
+        "status": "ACTIVE",
+        "createdAt": "2024-01-05T00:00:00.000Z",
+        "updatedAt": "2024-01-05T00:00:00.000Z"
+    },
+    {
+        "id": "6",
+        "title": "Spa & Wellness",
+        "type": "Business",
+        "thumbnail": "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?q=80&w=800&auto=format&fit=crop",
+        "description": "Spa center with appointment booking system",
+        "url": "#",
+        "status": "ACTIVE",
+        "createdAt": "2024-01-06T00:00:00.000Z",
+        "updatedAt": "2024-01-06T00:00:00.000Z"
+    }
+]

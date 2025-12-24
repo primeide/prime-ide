@@ -1,0 +1,50 @@
+[
+    {
+        "id": "1",
+        "clientName": "Rajesh Kumar",
+        "propertyName": "Sunset Beach Resort",
+        "location": "Goa",
+        "photo": "https://randomuser.me/api/portraits/men/32.jpg",
+        "rating": 5,
+        "text": "Prime IDE transformed our online presence! We went from zero bookings to 50+ direct bookings per month. The website is beautiful and the booking system works flawlessly.",
+        "status": "ACTIVE",
+        "createdAt": "2024-01-01T00:00:00.000Z",
+        "updatedAt": "2024-01-01T00:00:00.000Z"
+    },
+    {
+        "id": "2",
+        "clientName": "Priya Sharma",
+        "propertyName": "Mountain View Homestay",
+        "location": "Manali",
+        "photo": "https://randomuser.me/api/portraits/women/44.jpg",
+        "rating": 5,
+        "text": "Incredible value for money! The team delivered exactly what they promised - a stunning website in just 10 days. Our guests love the easy booking process.",
+        "status": "ACTIVE",
+        "createdAt": "2024-01-02T00:00:00.000Z",
+        "updatedAt": "2024-01-02T00:00:00.000Z"
+    },
+    {
+        "id": "3",
+        "clientName": "Amit Patel",
+        "propertyName": "Patel Traders",
+        "location": "Mumbai",
+        "photo": "https://randomuser.me/api/portraits/men/85.jpg",
+        "rating": 5,
+        "text": "Professional, fast, and affordable. Prime IDE created a website that perfectly represents our brand. Customer inquiries have increased by 200%!",
+        "status": "ACTIVE",
+        "createdAt": "2024-01-03T00:00:00.000Z",
+        "updatedAt": "2024-01-03T00:00:00.000Z"
+    },
+    {
+        "id": "4",
+        "clientName": "Sneha Reddy",
+        "propertyName": "Bliss Spa & Wellness",
+        "location": "Bangalore",
+        "photo": "https://randomuser.me/api/portraits/women/68.jpg",
+        "rating": 5,
+        "text": "The booking system has made our operations so much smoother. Clients can book appointments 24/7, and we get instant notifications. Highly recommend!",
+        "status": "ACTIVE",
+        "createdAt": "2024-01-04T00:00:00.000Z",
+        "updatedAt": "2024-01-04T00:00:00.000Z"
+    }
+]

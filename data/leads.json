@@ -1,0 +1,28 @@
+[
+  {
+    "id": "1765397219860",
+    "name": "Test User",
+    "email": "test@example.com",
+    "phone": "+91 9876543210",
+    "propertyName": "",
+    "location": "",
+    "requirement": "Need a modern hotel website with booking system",
+    "platform": "Hotel Website",
+    "status": "IN_PROGRESS",
+    "createdAt": "2025-12-10T20:06:59.860Z",
+    "updatedAt": "2025-12-22T17:08:54.664Z"
+  },
+  {
+    "id": "1766480467389",
+    "name": "Test User",
+    "email": "admin@primeide.com",
+    "phone": "+91 9876543210",
+    "propertyName": "Test Hotel",
+    "location": "Mumbai",
+    "requirement": "HI",
+    "platform": "Direct Booking Starter Plan",
+    "status": "NEW",
+    "createdAt": "2025-12-23T09:01:07.389Z",
+    "updatedAt": "2025-12-23T09:01:07.389Z"
+  }
+]
