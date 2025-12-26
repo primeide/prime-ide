@@ -225,6 +225,10 @@
         padding-top: var(--spacing-lg);
     }
 
+    .stat {
+        text-align: center;
+    }
+
     .floatingCard {
         transform: scale(0.8);
         padding: var(--spacing-xs);

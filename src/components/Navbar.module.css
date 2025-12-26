@@ -101,7 +101,7 @@
     .navLinks {
         position: fixed;
         top: 70px;
-        right: -100%;
+        right: 0;
         width: 70%;
         max-width: 300px;
         height: calc(100vh - 70px);
@@ -110,11 +110,13 @@
         align-items: flex-start;
         padding: var(--spacing-xl);
         box-shadow: var(--shadow-xl);
-        transition: right var(--transition-base);
+        transition: transform var(--transition-base);
+        transform: translateX(100%);
+        z-index: var(--z-fixed);
     }
 
     .navLinksOpen {
-        right: 0;
+        transform: translateX(0);
     }
 
     .navLink {
